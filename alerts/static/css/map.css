@@ -1,0 +1,156 @@
+.map-container {
+    position: relative;
+}
+
+#map {
+    width:100%;
+    height:93vh;
+}
+
+#map .mapboxgl-canvas:focus {
+    outline: none;
+}
+
+.side-section {
+    width: 300px;
+    background-color: var(--brand-color);
+}
+
+.header {
+    color:var(--white);
+    background-color: var(--cta-color);
+    margin-top: 1em;
+    padding: 0.5em 0.3em;
+}
+
+.side-tab-right {
+    position: absolute;
+    top:0;
+    right:0;
+    height: 93vh;
+    width:40vw;
+    background-color: var(--white);
+    z-index: 2;
+}
+
+/* modals */
+.modal-dialog {
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* forms */
+.input-group-text {
+    cursor: pointer;
+}
+
+/* alerts */
+.card {
+    background-color: var(--brand-color);
+    color: var(--gray2);
+}
+
+.card .info p {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.card .info p .fa {
+    margin-right: 0.5em;
+}
+
+.card-body .card-title{
+    margin:0;
+    font-weight: 700;
+}
+
+.card-body .btn {
+    font-size: smaller;
+}
+
+/* alerts */
+.alert-header {
+    position: relative;
+    height: 40vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.alert-header .fa {
+    border-radius: 50%;
+    color:var(--red);
+    padding: 1em;
+}
+
+.alert-header p {
+    color:var(--white);
+}
+
+.alert-header .badge {
+    position:absolute;
+    bottom:2%;
+    right:2%;
+    background-color: var(--white);
+    color:var(--primary);
+    padding:0.1em 0.2em;
+}
+
+.info div {
+    padding: 0.4em 0.7em;
+    border:0.5px solid var(--gray2);
+    border-width: 0px 0px 0.5px 0px;
+    font-size: 0.9rem;
+}
+
+.info div .fa {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.modal-dialog
+
+/* marker */
+.marker-element {
+    height: 20px;
+    width: 20px;
+    background-color: var(--brand-color);
+}
+
+.mapboxgl-marker {
+    cursor: pointer;
+}
+
+.mapboxgl-popup-content .card {
+    background-color: var(--white);
+    color:var(--black);
+    border-width: 0px;
+    font-size: 1em;
+}
+
+.mapboxgl-popup-content .card .card-body {
+    padding:0
+}
+
+@media (min-width:50em) {
+    .map-container {
+        display: flex;
+    }
+
+    #map {
+        width:80vw;
+        height:93vh;
+    }
+    
+    .side-section {
+        width: 300px;
+    }
+
+    .side-tab-right {
+        width:400px;
+    }
+}

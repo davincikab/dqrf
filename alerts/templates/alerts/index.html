@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block style %}
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/map.css' %}">
+{% endblock %}
+{% block content %}
+<div class="map-container">
+    <div class="side-section ">
+        <button class="btn btn-success btn-sm mx-2 mt-2" id="all-records">
+            <i class="fa fa-eye"></i>
+            View all Records
+        </button>
+
+        <div class="header">
+            <i class="fa fa-bell"></i>
+            Incoming Alerts
+        </div>
+
+        <div class="alerts-card px-2 py-2">
+            <div class="card">
+                <div class="card-body">
+                  <h6 class="card-title text-white">
+                      <i class="fa fa-plus"></i>
+                      Ambulance Required
+                  </h6>
+                 <div class="info">
+                    <p class="badge">Status New</p>
+                    <p>
+                        <i class="fa fa-info"></i>
+                        Kimathi Street
+                    </p>
+
+                    <p>
+                        <i class="fa fa-phone"></i>
+                       +254789794774
+                    </p>
+
+                    <p>
+                        <i class="fa fa-home"></i>
+                        Kimathi Street, Nyeri, Kenya
+                    </p>
+                    <p>
+                        <i class="fa fa-calendar"></i>
+                       2020-11-23 / 11:00:00
+                    </p>
+                 </div>
+
+                  <a href="#" class="btn btn-danger btn-sm decline" data-alert-id="12">Decline</a>
+                  <a href="#" class="btn btn-success btn-sm response" data-alert-id="12">Respond</a>
+                  <a href="#" class="btn btn-dark btn-sm view" data-alert-id="12">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <div class="side-tab-right">
+        <div class="alert-header bg-primary text-center">
+            <p><i class="fa fa-plus fa-2x bg-white"></i></p>
+            <p>Ambulance Required</p>
+            <p class="badge">Status New</p>
+        </div>
+
+        <div class="alert-description">
+            <div class="info">
+                <div><i class="fa fa-info"></i>Kimathi Street</div>
+                <div><i class="fa fa-phone"></i>+254789794774</div>
+                <div><i class="fa fa-home"></i>Kimathi Street, Nyeri, Kenya</div>
+                <div><i class="fa fa-calendar"></i>2020-11-23 / 11:00:00</div>
+             </div>'
+        </div>
+    </div>
+</div>
+
+<!-- Floating side Tab with  -->
+
+
+<!-- Modal -->
+<!-- Response Modal -->
+<div class="modal" tabindex="-1" id="response-modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header px-1 py-1">
+          <p class="modal-title">Respond To Alert</p>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="response" id="response-field" placeholder="Response Message" aria-label="message" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <span class="input-group-text" id="response">
+                        <i class="fa fa-send"></i>
+                  </span>
+                </div>
+              </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Decline Modal -->
+<div class="modal" tabindex="-1" id="decline-modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header px-1 py-1">
+          <p class="modal-title">Decline Alert </p>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        
+          <form action="" method="post" id="">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="reason" id="decline-field" placeholder="Decline Message" aria-label="message" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <span class="input-group-text" id="decline">
+                        <i class="fa fa-send"></i>
+                  </span>
+                </div>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <script src="{% static 'js/map.js' %}"></script>
+{% endblock %}

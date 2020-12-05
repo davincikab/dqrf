@@ -1,0 +1,30 @@
+.container {
+    display:  flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+.container .card{
+    box-shadow: 2px 2px 0.4em var(--gray2);
+    min-width:300px;
+    padding: 0rem;
+    overflow: hidden;
+    /* padding: */
+}
+
+form p {
+    margin:0;
+    font-size: 0.9rem;
+}
+
+form ul li {
+    font-size: 0.9rem;
+}
+
+form .btn {
+    margin-top: 0.5rem;
+}
+
+.errorlist, .errorlist.nonfield {
+    display: none;
+}

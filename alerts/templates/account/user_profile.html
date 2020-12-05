@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %} User Profile {% endblock %}
+{% block style %}
+    <style>
+        .card {box-shadow: 2px 2px 0.1em var(--light);
+            max-width:300px;
+            padding: 0rem;
+            overflow: hidden;
+        }
+
+        .card .card-img-top {
+            height: 300px;
+            width: 300px;
+            object-fit: cover;
+        }
+
+        .info p {
+            margin: 0;
+            font-size: 0.9rem;
+            border-style: solid;
+            border-color: var(--gray2);
+            border-width: 0.5px 0px 0px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0.2em;
+        }
+
+        .info p + .info p {
+            border-color: var(--gray2);
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+       <div class="row">
+           <div class="col-md-6">
+               <!-- User Info -->
+               <div class="card">
+                    <img src="/accounts/media/{{ user.userprofile.photo }}" alt="" class="card-img-top">
+
+                    <div class="info">
+                        <p><b>Username</b> {{ user.username}}</p>
+                        <p><b>Email</b> {{ user.email }}</p>
+                        <p><b>Full Name</b> {{ user.last_name }} {{ user.first_name }}</p>
+                    </div>
+               </div>
+           </div>
+           <div class="col-md-6">
+               <!-- <h6>User Actions</h6> -->
+               <a href="{% url 'password_change' %}" class="btn btn-success my-2">Change Password</a><br>
+               <a href="{% url 'edit' %}" class="btn btn-success">
+                   <i class="fa fa-pen"></i>Edit Profile
+                </a>
+                
+           </div>
+       </div>
+</div>
+{% endblock %}

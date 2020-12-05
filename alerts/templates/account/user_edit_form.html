@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Edit Profile {% endblock %}
+{% block style %} 
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="card">
+            <form action="" method="post" class="px-2 py-2">
+                <h5 class="text-center">Update Profile</h5>
+                {% csrf_token %}
+                {{ user_edit_form.as_p }}
+                {{ user_profile_form.as_p }}
+                <button type="submit" class="btn btn-success w-100">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

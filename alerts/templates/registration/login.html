@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Login {% endblock %}
+{% block style %} 
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="bg-primary text-center ">
+            <h6 class="text-white py-3 bold text-uppercase mb-0">Dekut Quick Response Force</h6>
+        </div>
+        {% if form.errors %}
+            <small class="text-danger">
+                Your username and password didn't match.
+                Please try again.
+            </small>
+        {% else %}
+            <!-- <p>Please, use the following form to log-in:</p> -->
+        {% endif %}
+        <form action="" method="post" class="px-2 py-2">
+            <h5>Login</h5>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="hidden" name="next" value="{{ next }}" />
+            <button type="submit" class="btn btn-success w-100">Submit</button>
+            <small>
+                <a href="{% url 'password_reset' %}" class="text-small">Reset Passord</a>
+            </small>
+        </form>
+    </div>
+</div>
+{% endblock %}
