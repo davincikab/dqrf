@@ -12,4 +12,4 @@ def main_view(request):
 @login_required
 def alert_list(request):
     alerts = Alert.objects.all()
-    return render(request, 'alerts/list.html', {'alerts':alerts})
+    return render(request, 'alerts/alerts_list.html', {'alerts':alerts})

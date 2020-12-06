@@ -1,0 +1,32 @@
+{% for alert in alerts %}
+<div class="card">
+    <div class="card" data-id="{{ alert.pk }}">
+        <div class="card-body">
+          <h6 class="card-title text-white">
+              <i class="fa fa-plus"></i>
+             {{ alert.title }}
+          </h6>
+         <div class="info">
+            <p class="badge">Status {{ alert.status }}</p>
+            <p>
+                <i class="fa fa-info"></i>
+               {{ alert.user.residence}}
+            </p>
+
+            <p>
+                <i class="fa fa-phone"></i>
+              {{ alert.user.mobile_no}}
+            </p>
+            <p>
+                <i class="fa fa-calendar"></i>
+               {{ alert.time }}
+            </p>
+         </div>
+
+          <a href="#" class="btn btn-danger btn-sm decline" data-alert-id="{{ alert.pk }}">Decline</a>
+          <a href="#" class="btn btn-success btn-sm response" data-alert-id="{{ alert.pk }}">Respond</a>
+          <a href="#" class="btn btn-dark btn-sm view" data-alert-id="{{ alert.pk }}">View</a>
+        </div>
+    </div>
+</div>
+{% endfor %}
