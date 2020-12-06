@@ -67,8 +67,12 @@ WSGI_APPLICATION = 'rescue_me.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE':'django.contrib.gis.db.backends.postgis',
+        'NAME': 'DQRF',
+        'HOST':'localhost',
+        'PORT':'5432',
+        'USER':'postgres',
+        'PASSWORD':'postgres'
     }
 }
 
@@ -91,6 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "account.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -113,7 +118,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'alerts/static/'
 
 MEDIA_ROOT = '/media/'
-MEDIA_URL = 'media/'
+MEDIA_URL = os.path.join(BASE_DIR, "media/")
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
