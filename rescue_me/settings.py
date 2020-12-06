@@ -20,15 +20,20 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'account',
-    'alerts',
+    'django.contrib.gis',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+
+    # 3rd Party
+    'rest_framework',
+
+    #local
+    'account',
+    'alerts',
 ]
 
 MIDDLEWARE = [
@@ -122,3 +127,6 @@ MEDIA_URL = os.path.join(BASE_DIR, "media/")
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+GDAL_LIBRARY_PATH = 'C:/OSGeo4W64/bin/gdal204'
+GEOS_LIBRARY_PATH = 'C:/Program Files/PostgreSQL/12/bin/libgeos_c'

@@ -32,7 +32,7 @@ class Alert(models.Model):
         verbose_name_plural = "Alerts"
 
     def __str__(self):
-        return self.name
+        return self.emergency_type
 
     # def get_absolute_url(self):
     #     return reverse("alert_detail", kwargs={"pk": self.pk})
