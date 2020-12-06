@@ -5,7 +5,7 @@ var allAlerts = [];
 var viewAllRecords = document.getElementById('all-records');
 var declineAlerts = document.querySelectorAll(".decline");
 var respondAlerts = document.querySelectorAll('.response');
-var alerts = document.querySelectorAll("view");
+var alerts = document.querySelectorAll(".view");
 
 var map = new mapboxgl.Map({
     container: 'map',
@@ -67,7 +67,14 @@ alerts.forEach(viewAlert => {
         alertId = this.getAttribute("data-alert-id");
 
         // toggle side-tab right
+        $('#side-tab').removeClass('d-none');
+
+        // update the side tab with emergency info
     });
+});
+
+$('#close-btn').on('click', function(e) {
+    $('#side-tab').addClass('d-none'); 
 });
 
 // send buttons
@@ -114,7 +121,7 @@ $("#decline").on("click", (e) => {
     }
 });
 
-// sen the messages
+// send the messages
 function sendMessage() {
 
 }
@@ -137,7 +144,7 @@ function streamIncomingAlerts() {
 
 $(viewAllRecords).on('click', function(e) {
     // toggle the text content
-    
+
     // get the alerts
     requestAllAlerts();
 });

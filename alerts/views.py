@@ -12,4 +12,6 @@ def main_view(request):
 @login_required
 def alert_list(request):
     alerts = Alert.objects.all()
+
+    # pagination
     return render(request, 'alerts/alerts_list.html', {'alerts':alerts})
