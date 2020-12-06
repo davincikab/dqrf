@@ -16,11 +16,21 @@
         </button>
 
         <div class="header">
-            <i class="fa fa-bell"></i>
-            Incoming Alerts
+          <div class="d-flex space-between">
+              <p class="my-0">
+                <i class="fa fa-bell"></i>
+                Incoming Alerts
+              </p>
+
+              <i class="fa fa-search"></i>
+          </div>
+            
+
+            <input type="text" class="form-control" placeholder="Search Alert ...">
         </div>
 
-        <div class="alerts-card px-2 py-2">
+        <div class="alerts-card px-2 py-2" id="alerts-section">
+          <!-- search tab -->
             <div class="card">
                 <div class="card-body">
                   <h6 class="card-title text-white">
@@ -54,6 +64,8 @@
                   <a href="#" class="btn btn-dark btn-sm view" data-alert-id="12">View</a>
                 </div>
             </div>
+
+            <!-- pagination: scroll -->
         </div>
     </div>
 

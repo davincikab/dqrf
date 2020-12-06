@@ -7,7 +7,7 @@
 {% block content %}
     <div class="container">
         <div class="card">
-            <form action="" method="post" class="px-2 py-2">
+            <form action="" method="post" class="px-2 py-2" enctype="multipart/form-data">
                 <h5 class="text-center">Update Profile</h5>
                 {% csrf_token %}
                 {{ user_edit_form.as_p }}

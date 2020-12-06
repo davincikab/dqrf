@@ -76,6 +76,11 @@ body{
     color:var(--white)
 }
 
+/* flex class */
+.space-between {
+    justify-content: space-between;
+}
+
 /* text */
 .bold{
     font-weight: bold;

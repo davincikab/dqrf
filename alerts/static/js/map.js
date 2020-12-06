@@ -2,7 +2,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGF1ZGk5NyIsImEiOiJjanJtY3B1bjYwZ3F2NGFvOXZ1a
 
 var alertId;
 var allAlerts = [];
-var viewAllRecords = document.getElementById('.all-records');
+var viewAllRecords = document.getElementById('all-records');
 var declineAlerts = document.querySelectorAll(".decline");
 var respondAlerts = document.querySelectorAll('.response');
 var alerts = document.querySelectorAll("view");
@@ -133,3 +133,29 @@ function streamIncomingAlerts() {
         .setPopup(popup)
         .addTo(map);
 }
+
+
+$(viewAllRecords).on('click', function(e) {
+    // toggle the text content
+    
+    // get the alerts
+    requestAllAlerts();
+});
+
+function requestAllAlerts() {
+    $.ajax({
+        url:'/alert_list/',
+        type:'GET',
+        success:function(data) {
+            console.log(data);
+
+            // update the alerts sections
+            $('#alerts-section').html(data);
+        },
+        error:function(error) {
+            console.error(error);
+        }
+    })
+}
+
+// consume the rest API alerts

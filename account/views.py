@@ -52,11 +52,15 @@ def profile(request):
 def edit_user(request):
     if request.method == 'POST':
         user_edit_form = UserEditForm(instance=request.user, data=request.POST)
-        user_profile_form = UserProfileForm(instance=request.user.userprofile, data=request.POST, files=request.FILES)
+        user_profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user.userprofile)
 
         if user_edit_form.is_valid() and user_profile_form.is_valid():
+            print(request.FILES)
             user_edit_form.save()
-            user_profile_form.save()
+
+            profile = user_profile_form.save(commit = False)
+            profile.save()
+
             messages.success(request, "Updated profile successfully")
             return redirect("profile")
         else:
