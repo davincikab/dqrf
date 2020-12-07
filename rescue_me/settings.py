@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     #local
     'account',
     'alerts',
+    'api',
 ]
 
 MIDDLEWARE = [
