@@ -11,7 +11,11 @@ def main_view(request):
 
 @login_required
 def alert_list(request):
-    alerts = Alert.objects.all()
+    if request.GET.get('q'):
+        query = request.GET.get('q')
+        alerts = Alert.objects.filter(title__icontains =query )
+    else:
+        alerts = Alert.objects.all()
 
     # pagination
     return render(request, 'alerts/alerts_list.html', {'alerts':alerts})

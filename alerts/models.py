@@ -16,15 +16,16 @@ class Alert(models.Model):
         ('DECLINED', 'DECLINED')
     )
 
-    reported_by = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     emergency_type = models.CharField("Type of Emergency", max_length=20, choices=EMERGENCY_CHOICE)
     time = models.DateTimeField("Occurence Date", auto_now=True)
     description = models.CharField("Description", max_length=300)
     status = models.CharField("Emergency Status", max_length=50, choices=STATUS)
     response_time = models.DateTimeField("Response Time", blank=True)
     location = models.PointField()
+    location_name = models.CharField("Location Name", max_length=50)
     image = models.ImageField("Profile Picture", upload_to="alerts/%Y/%m/%d", blank=True)
-    responder = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="responseder", blank=True, on_delete=models.CASCADE)
+    responder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="responseder", blank=True, on_delete=models.CASCADE)
     
 
     class Meta:

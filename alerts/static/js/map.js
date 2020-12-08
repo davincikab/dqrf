@@ -17,6 +17,9 @@ var map = new mapboxgl.Map({
 map.on('load', function(e) {
     // add map layers
    fetchAlerts();
+
+    // alerts heatmap
+
 });
 
 function fetchAlerts(){
@@ -26,7 +29,7 @@ function fetchAlerts(){
         console.log(data);
         allAlerts = data.features;
 
-        // create the markers and the respective popup
+        // create the markers and the respective popup  
         renderMarkers(allAlerts);
         renderAlertListing(allAlerts);
 
@@ -49,9 +52,28 @@ function renderAlertListing(features) {
     features.forEach(feature => {
         let element = document.createElement("div");
         element.classList.add('card');
+        element.id = 'alert-' + feature.properties.pk;
         element.setAttribute('data-alert-id', feature.properties.pk);
 
         element.innerHTML = cardElement(feature);
+
+        element.addEventListener('mouseover', function(e) {
+            this.classList.add('active');
+            let alertId = this.getAttribute('data-alert-id');
+            let alert = getAlertById(alertId);
+
+            map.easeTo({
+                center:alert.geometry.coordinates,
+                zoom:16
+            });
+
+            console.log(this.classList);
+        });
+
+        element.addEventListener('mouseout', function(e) {
+            this.classList.remove('active');
+        });
+
         docFragment.append(element);
     });
 
@@ -66,7 +88,14 @@ function renderMarkers(features) {
         let popup = new mapboxgl.Popup()
             .setHTML(element);
 
-        let marker = new mapboxgl.Marker()
+        // custom marker element
+        let divMarker = document.createElement('div');
+        divMarker.classList.add('marker-element');
+        divMarker.innerHTML = '<i class="fa fa-info"></i>'
+
+        let status = feature.properties.status; 
+
+        let marker = new mapboxgl.Marker({element:divMarker})
             .setLngLat(feature.geometry.coordinates)
             .setPopup(popup)
             .addTo(map);
@@ -76,12 +105,14 @@ function renderMarkers(features) {
 
 function cardElement(feature) {
     return  '<div class="card-body">'+
-    '<h6 class="card-title text-success"> <i class="fa fa-plus mr-2"></i>Ambulance</h6>'+
+    '<h6 class="card-title text-white"> <i class="fa fa-plus mr-2"></i>'+
+    feature.properties.emergency_type +
+    '</h6>'+
     '<div class="info">'+
         '<p class="badge">Status '+ feature.properties.status +'</p>'+
-        '<p><i class="fa fa-info"></i>Kimathi Street</p>'+
+        '<p><i class="fa fa-info"></i>' + feature.properties.location_name +'</p>'+
         '<p><i class="fa fa-phone"></i>+254789794774</p>'+
-        '<p><i class="fa fa-home"></i>'+ feature.properties.place +', Nyeri, Kenya</p>'+
+        '<p><i class="fa fa-home"></i>'+ feature.properties.location_name +', Nyeri, Kenya</p>'+
         '<p><i class="fa fa-calendar"></i>'+ feature.properties.time +'</p>'+
     '</div>'+
     '<a href="#" class="btn btn-danger btn-sm mx-2 decline" data-alert-id="'+ feature.properties.pk +'">Decline</a>'+
@@ -113,13 +144,37 @@ function registerListeners() {
         viewAlert.addEventListener('click', function() {
             // display alert information
             alertId = this.getAttribute("data-alert-id");
+            let alert = getAlertById(alertId);
+
+            // update the side tab with emergency info
+            let innerHtml = updateSideTabContent(alert);
+            $('#side-tab').html(innerHtml);
 
             // toggle side-tab right
             $('#side-tab').removeClass('d-none');
-
-            // update the side tab with emergency info
+            
         });
     });
+}
+
+function updateSideTabContent(feature) {
+    let imageElement =  feature.properties.image ? '<img src="'+feature.properties.image +'" class="img"/>' : 
+    '<p><i class="fa fa-plus fa-2x bg-white"></i></p><p>'+ feature.properties.emergency_type +'</p>';
+
+    return '<div class="alert-header bg-primary text-center">'+
+            '<div>'+ imageElement +'</div>'+
+            '<p class="badge">Status '+ feature.properties.status +'</p>'+
+       '</div>'+
+       '<div class="alert-description">'+
+            '<div class="info">'+
+                '<div><i class="fa fa-info"></i>'+ feature.properties.location_name +'</div>'+
+                '<div><i class="fa fa-phone"></i>+254789794774</div>'+
+                '<div><i class="fa fa-home"></i>'+ feature.properties.location_name +', Nyeri, Kenya</div>'+
+                '<div><i class="fa fa-calendar"></i>'+ feature.properties.time +'</div>'+
+             '</div>'+
+        '</div>';
+    
+    
 }
 
 $('#close-btn').on('click', function(e) {
@@ -177,7 +232,7 @@ function sendMessage() {
 
 // get alert by id
 function getAlertById(id) {
-    let alert = allAlerts.find(alert => alert.id == id);
+    let alert = allAlerts.find(alert => alert.properties.pk == id);
 
     return alert;
 }
@@ -192,10 +247,21 @@ function streamIncomingAlerts() {
 
 
 $(viewAllRecords).on('click', function(e) {
-    // toggle the text content
+    console.log(viewAllRecords.innerText);
+
+    if(this.innerText.includes('New')) {
+        $('#alerts-section').html("");
+
+        renderAlertListing(allAlerts);
+        viewAllRecords.innerHTML = '<i class="fa fa-eye"></i>View all Records';
+        return;
+    }
 
     // get the alerts
     requestAllAlerts();
+
+    // toggle the text content
+    viewAllRecords.textContent = "View New Alerts";
 });
 
 function requestAllAlerts() {
@@ -203,8 +269,6 @@ function requestAllAlerts() {
         url:'/alert_list/',
         type:'GET',
         success:function(data) {
-            console.log(data);
-
             // update the alerts sections
             $('#alerts-section').html(data);
         },
@@ -212,4 +276,10 @@ function requestAllAlerts() {
             console.error(error);
         }
     })
+}
+
+
+// function search alerts
+function queryAlerts(query) {
+    fetch('')
 }

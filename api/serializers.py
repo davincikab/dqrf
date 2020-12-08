@@ -8,4 +8,4 @@ class AlertSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Alert
         geo_field = 'location'
-        fields = ('pk','reported_by', 'emergency_type', 'description', 'location','time', 'response_time', 'image')
+        fields = ('pk','status', 'reported_by', 'emergency_type', 'description', 'location','time', 'response_time', 'location_name', 'image')

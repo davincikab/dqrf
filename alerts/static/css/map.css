@@ -53,6 +53,10 @@
     color: var(--gray2);
 }
 
+.card.active {
+    background-color: var(--white) !important;
+}
+
 .card .info p {
     margin: 0;
     font-size: 0.8rem;
@@ -79,6 +83,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .alert-header .fa {
@@ -125,7 +130,12 @@
 .marker-element {
     height: 20px;
     width: 20px;
+    border-radius: 50%;
     background-color: var(--brand-color);
+    box-shadow: 1px 1px 0.2em var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .mapboxgl-marker {
