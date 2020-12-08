@@ -104,20 +104,22 @@ function renderMarkers(features) {
 }
 
 function cardElement(feature) {
+    let time = new Date(feature.properties.time);
+
     return  '<div class="card-body">'+
     '<h6 class="card-title text-white"> <i class="fa fa-plus mr-2"></i>'+
     feature.properties.emergency_type +
     '</h6>'+
     '<div class="info">'+
         '<p class="badge">Status '+ feature.properties.status +'</p>'+
-        '<p><i class="fa fa-info"></i>' + feature.properties.location_name +'</p>'+
+        '<p><i class="fa fa-map-marker"></i>' + feature.properties.location_name +'</p>'+
         '<p><i class="fa fa-phone"></i>+254789794774</p>'+
         '<p><i class="fa fa-home"></i>'+ feature.properties.location_name +', Nyeri, Kenya</p>'+
-        '<p><i class="fa fa-calendar"></i>'+ feature.properties.time +'</p>'+
+        '<p><i class="fa fa-calendar"></i>'+ time +'</p>'+
     '</div>'+
-    '<a href="#" class="btn btn-danger btn-sm mx-2 decline" data-alert-id="'+ feature.properties.pk +'">Decline</a>'+
-    '<a href="#" class="btn btn-success btn-sm mr-1 response" data-alert-id="'+ feature.properties.pk +'">Respond</a>'+
-    '<a href="#" class="btn btn-dark btn-sm mr-1 view" data-alert-id="'+ feature.properties.pk +'">View</a>'+
+    '<button class="btn btn-danger btn-sm mx-2 decline" data-alert-id="'+ feature.properties.pk +'">Decline</button>'+
+    '<button class="btn btn-success btn-sm mr-1 response" data-alert-id="'+ feature.properties.pk +'">Respond</button>'+
+    '<button class="btn btn-dark btn-sm mr-1 view" data-alert-id="'+ feature.properties.pk +'">View</button>'+
     '</div>';
 }
 
@@ -173,7 +175,6 @@ function updateSideTabContent(feature) {
                 '<div><i class="fa fa-calendar"></i>'+ feature.properties.time +'</div>'+
              '</div>'+
         '</div>';
-    
     
 }
 
@@ -258,15 +259,15 @@ $(viewAllRecords).on('click', function(e) {
     }
 
     // get the alerts
-    requestAllAlerts();
+    requestAllAlerts('/alert_list/');
 
     // toggle the text content
     viewAllRecords.textContent = "View New Alerts";
 });
 
-function requestAllAlerts() {
+function requestAllAlerts(url) {
     $.ajax({
-        url:'/alert_list/',
+        url:url,
         type:'GET',
         success:function(data) {
             // update the alerts sections
@@ -278,8 +279,10 @@ function requestAllAlerts() {
     })
 }
 
+$('#search-form').on('submit', function(e) {
+    e.preventDefault();
+    let url = '/alert_list/?q=' + $("#search").val();
+    console.log(url);
 
-// function search alerts
-function queryAlerts(query) {
-    fetch('')
-}
+    requestAllAlerts(url);
+});

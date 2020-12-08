@@ -86,6 +86,9 @@
     overflow: hidden;
 }
 
+.alert-header img  {
+    height: 40vh;
+}
 .alert-header .fa {
     border-radius: 50%;
     color:var(--red);

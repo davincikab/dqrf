@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
+from django.db.models import Q
 
 from .models import Alert
 
@@ -13,7 +14,7 @@ def main_view(request):
 def alert_list(request):
     if request.GET.get('q'):
         query = request.GET.get('q')
-        alerts = Alert.objects.filter(title__icontains =query )
+        alerts = Alert.objects.filter(Q(description__icontains=query) | Q(emergency_type__icontains=query))
     else:
         alerts = Alert.objects.all()
 
