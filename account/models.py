@@ -3,9 +3,6 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    # FULL NAME 	
-    # REG_NO	
-    # EMAIL	
     mobile_no = models.CharField('Phone Number', blank="True", max_length=13)
     residence = models.CharField("Area of Residence", blank="True", max_length=50)
 

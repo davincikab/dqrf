@@ -14,64 +14,113 @@ var map = new mapboxgl.Map({
     zoom: 14.4
 });
 
-let element = '<div class="card">'+
-'<div class="card-body">'+
-  '<h6 class="card-title text-success"> <i class="fa fa-plus mr-2"></i>Ambulance</h6>'+
- '<div class="info">'+
-    '<p class="badge">Status New</p>'+
-    '<p><i class="fa fa-info"></i>Kimathi Street</p>'+
-    '<p><i class="fa fa-phone"></i>+254789794774</p>'+
-    '<p><i class="fa fa-home"></i>Kimathi Street, Nyeri, Kenya</p>'+
-    '<p><i class="fa fa-calendar"></i>2020-11-23 / 11:00:00</p>'+
- '</div>'+
-  '<a href="#" class="btn btn-danger btn-sm mx-2 decline">Decline</a>'+
-  '<a href="#" class="btn btn-success btn-sm mr-1 response">Respond</a>'+
-'</div>'+
-'</div>';
-
-let popup = new mapboxgl.Popup()
-    .setHTML(element);
-
-let marker = new mapboxgl.Marker()
-    .setLngLat([36.948670, -0.4227716770])
-    .setPopup(popup)
-    .addTo(map);
-
-
 map.on('load', function(e) {
     // add map layers
-    
+   fetchAlerts();
 });
 
-declineAlerts.forEach(declineAlert => {
-    declineAlert.addEventListener('click', function(e){
-        e.preventDefault();
+function fetchAlerts(){
+    fetch("/api/v1/")
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        allAlerts = data.features;
+
+        // create the markers and the respective popup
+        renderMarkers(allAlerts);
+        renderAlertListing(allAlerts);
+
+        // query all the cards
+        declineAlerts = document.querySelectorAll(".decline");
+        respondAlerts = document.querySelectorAll('.response');
+        alerts = document.querySelectorAll(".view");
+
+        // register event listeners
+        registerListeners();
+    })
+    .catch(error  => {
+        console.error(data)
+    })
+}
+
+function renderAlertListing(features) {
+    let docFragment = document.createDocumentFragment();
+
+    features.forEach(feature => {
+        let element = document.createElement("div");
+        element.classList.add('card');
+        element.setAttribute('data-alert-id', feature.properties.pk);
+
+        element.innerHTML = cardElement(feature);
+        docFragment.append(element);
+    });
+
+    $('#alerts-section').append(docFragment);
+}
+
+function renderMarkers(features) {
+    features.forEach(feature => {
+        let element = '<div class="card">'+ cardElement(feature) +
+        '</div>';
+
+        let popup = new mapboxgl.Popup()
+            .setHTML(element);
+
+        let marker = new mapboxgl.Marker()
+            .setLngLat(feature.geometry.coordinates)
+            .setPopup(popup)
+            .addTo(map);
+    });
+
+}
+
+function cardElement(feature) {
+    return  '<div class="card-body">'+
+    '<h6 class="card-title text-success"> <i class="fa fa-plus mr-2"></i>Ambulance</h6>'+
+    '<div class="info">'+
+        '<p class="badge">Status '+ feature.properties.status +'</p>'+
+        '<p><i class="fa fa-info"></i>Kimathi Street</p>'+
+        '<p><i class="fa fa-phone"></i>+254789794774</p>'+
+        '<p><i class="fa fa-home"></i>'+ feature.properties.place +', Nyeri, Kenya</p>'+
+        '<p><i class="fa fa-calendar"></i>'+ feature.properties.time +'</p>'+
+    '</div>'+
+    '<a href="#" class="btn btn-danger btn-sm mx-2 decline" data-alert-id="'+ feature.properties.pk +'">Decline</a>'+
+    '<a href="#" class="btn btn-success btn-sm mr-1 response" data-alert-id="'+ feature.properties.pk +'">Respond</a>'+
+    '<a href="#" class="btn btn-dark btn-sm mr-1 view" data-alert-id="'+ feature.properties.pk +'">View</a>'+
+    '</div>';
+}
+
+function registerListeners() {
+    declineAlerts.forEach(declineAlert => {
+        declineAlert.addEventListener('click', function(e){
+            e.preventDefault();
+                alertId = this.getAttribute("data-alert-id");
+            // open decline modal
+            $('#decline-modal').modal('toggle');
+        });
+    });
+
+    respondAlerts.forEach(respondAlert => {
+        respondAlert.addEventListener('click', function(e){
+            e.preventDefault();
             alertId = this.getAttribute("data-alert-id");
-        // open decline modal
-        $('#decline-modal').modal('toggle');
+            // open respond modal
+            $('#response-modal').modal('toggle');
+        });
     });
-});
 
-respondAlerts.forEach(respondAlert => {
-    respondAlert.addEventListener('click', function(e){
-        e.preventDefault();
-        alertId = this.getAttribute("data-alert-id");
-        // open respond modal
-        $('#response-modal').modal('toggle');
+    alerts.forEach(viewAlert => {
+        viewAlert.addEventListener('click', function() {
+            // display alert information
+            alertId = this.getAttribute("data-alert-id");
+
+            // toggle side-tab right
+            $('#side-tab').removeClass('d-none');
+
+            // update the side tab with emergency info
+        });
     });
-});
-
-alerts.forEach(viewAlert => {
-    viewAlert.addEventListener('click', function() {
-        // display alert information
-        alertId = this.getAttribute("data-alert-id");
-
-        // toggle side-tab right
-        $('#side-tab').removeClass('d-none');
-
-        // update the side tab with emergency info
-    });
-});
+}
 
 $('#close-btn').on('click', function(e) {
     $('#side-tab').addClass('d-none'); 
