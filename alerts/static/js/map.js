@@ -286,3 +286,10 @@ $('#search-form').on('submit', function(e) {
 
     requestAllAlerts(url);
 });
+
+
+// PAGINATION
+// HEATMAP
+// ALERT TYPES
+// ALERT STATUS
+// SCROLL: STATIC MAP
