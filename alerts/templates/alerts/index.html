@@ -42,20 +42,7 @@
         <span class="btn-close" id="close-btn">
           <i class="fa fa-close"></i>
         </span>
-        <div class="alert-header bg-primary text-center">
-            <p><i class="fa fa-plus fa-2x bg-white"></i></p>
-            <p>Ambulance Required</p>
-            <p class="badge">Status New</p>
-        </div>
-
-        <div class="alert-description">
-            <div class="info">
-                <div><i class="fa fa-info"></i>Kimathi Street</div>
-                <div><i class="fa fa-phone"></i>+254789794774</div>
-                <div><i class="fa fa-home"></i>Kimathi Street, Nyeri, Kenya</div>
-                <div><i class="fa fa-calendar"></i>2020-11-23 / 11:00:00</div>
-             </div>
-        </div>
+        <div id="side-tab-body"></div>
     </div>
 </div>
 
@@ -115,6 +102,9 @@
 </div>
 {% endblock %}
 {% block javascript %}
+    <script src='https://unpkg.com/@turf/turf/turf.min.js'></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <script src="https://unpkg.com/pbf@3.0.5/dist/pbf.js"></script>
+    <script src="https://unpkg.com/geobuf@3.0.2/dist/geobuf.js"></script>
     <script src="{% static 'js/map.js' %}"></script>
 {% endblock %}

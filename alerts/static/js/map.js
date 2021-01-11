@@ -16,10 +16,82 @@ var map = new mapboxgl.Map({
 
 map.on('load', function(e) {
     // add map layers
-   fetchAlerts();
+    fetchAlerts();
 
     // alerts heatmap
+    // forest layer
+    map.addSource('forest', {
+        'type':'geojson',
+        'data':{
+            'type':'FeatureCollection',
+            'features':[]
+        }
+    });
 
+    map.addLayer({
+        'id':'forest',
+        'source':'forest',
+        'type':'fill',
+        'paint':{
+            'fill-color':'green',
+        },
+        'layout':{
+
+        }
+    });
+
+    // fetch forest data
+    fetch('/static/data/forest.pbf', { responseType:'ArrayBuffer'})
+    .then(res => res.arrayBuffer())
+    .then(data => {
+        console.log("PBF file");
+        console.log(data);
+
+        var geojson = geobuf.decode(new Pbf(data));
+        geojson = turf.featureCollection(geojson.features);
+
+        console.log(geojson);
+        // console.log(geojson);
+        map.getSource('forest').setData(geojson);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+    map.addSource('plantation', {
+        'type':'geojson',
+        'data':{
+            'type':'FeatureCollection',
+            'features':[]
+        }
+    });
+
+    map.addLayer({
+        'id':'plantation',
+        'source':'plantation',
+        'type':'fill',
+        'paint':{
+            'fill-color':'#938446',
+        },
+    });
+
+    // fetch forest data
+    fetch('/static/data/plantation.pbf', { responseType:'ArrayBuffer'})
+    .then(res => res.arrayBuffer())
+    .then(data => {
+        console.log("PBF file");
+        console.log(data);
+
+        var geojson = geobuf.decode(new Pbf(data));
+        geojson = turf.featureCollection(geojson.features);
+
+        console.log(geojson);
+        // console.log(geojson);
+        map.getSource('plantation').setData(geojson);
+    })
+    .catch(error => {
+        console.error(error);
+    });
 });
 
 function fetchAlerts(){
@@ -43,7 +115,36 @@ function fetchAlerts(){
     })
     .catch(error  => {
         console.error(data)
-    })
+    });
+
+    // accident spots
+    map.addSource('accidentspots', {
+        'type':'geojson',
+        'data':'/static/data/accidentspot.geojson'
+    });
+
+    map.addLayer({
+        'id':'accidentspots',
+        'source':'accidentspots',
+        'type':'line',
+        'paint':{
+            'line-color':[
+                'match',
+                ['get', 'gridcode'],
+                3,
+                'brown',
+                2,
+                'red',
+                1,
+                'gray',
+                'gray'
+            ],
+            'line-width':4
+        },
+        'layout':{
+            'visibility':'visible'
+        }
+    });
 }
 
 function renderAlertListing(features) {
@@ -67,7 +168,7 @@ function renderAlertListing(features) {
                 zoom:16
             });
 
-            console.log(this.classList);
+            // console.log(this.classList);
         });
 
         element.addEventListener('mouseout', function(e) {
@@ -150,7 +251,7 @@ function registerListeners() {
 
             // update the side tab with emergency info
             let innerHtml = updateSideTabContent(alert);
-            $('#side-tab').html(innerHtml);
+            $('#side-tab-body').html(innerHtml);
 
             // toggle side-tab right
             $('#side-tab').removeClass('d-none');
@@ -286,6 +387,75 @@ $('#search-form').on('submit', function(e) {
 
     requestAllAlerts(url);
 });
+
+// create layer toggler
+const overlayLayers = {
+    // 'Alerts':'alerts',
+    'Plantation':'plantation',
+    'Forest':'forest',
+    'Accident Spot':'accidentspots',
+};
+
+class LayerControl {
+    onAdd(map) {
+        this._map = map;
+        this._container = document.createElement("div");
+        this._container.className = 'mapboxgl-ctrl';
+        this._container.classList.add("layer-control");
+
+        // create a checkbox
+        let layerNames = Object.keys(overlayLayers);
+        layerNames.forEach(layerName => {
+            let layer = overlayLayers[layerName];
+            let input = document.createElement("input");
+            input.className = "layer";
+            input.setAttribute("type", "checkbox");
+
+            input.name = "layer";
+            input.id = layerName.toLowerCase();
+            input.value = layer; 
+            
+            input.checked = map.getLayoutProperty(layer, 'visiblility') == 'visible' ? true : false;
+
+            let div = document.createElement("div");
+            div.classList.add("d-flex");
+
+            div.append(input);
+            div.innerHTML += "<label for='"+ layerName.toLowerCase() +"' class='ml-1 mb-0'>"+ layerName +"</label>";
+
+            this._container.append(div);
+        });
+
+        return this._container;
+    }
+
+    onRemove() {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+    }
+}
+
+map.addControl(new LayerControl(), 'top-right');
+
+let overLayers = document.querySelectorAll(".layer");
+overLayers.forEach(overlay => {
+    overlay.addEventListener("click", function(e) {
+        toggleLayer(e);
+    });
+});
+
+function toggleLayer(e) {
+    console.log(e);
+    let value = e.target.value;
+    let isChecked = e.target.checked ? true : false;
+
+    // turn the layer on or off
+    if(isChecked) {
+        map.setLayoutProperty(value, 'visibility', 'visible');
+    } else {
+        map.setLayoutProperty(value, 'visibility', 'none');
+    }
+}
 
 
 // PAGINATION

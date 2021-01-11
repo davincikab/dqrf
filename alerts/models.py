@@ -21,7 +21,7 @@ class Alert(models.Model):
     time = models.DateTimeField("Occurence Date", auto_now=True)
     description = models.CharField("Description", max_length=300)
     status = models.CharField("Emergency Status", max_length=50, choices=STATUS)
-    response_time = models.DateTimeField("Response Time", blank=True)
+    response_time = models.DateTimeField("Response Time", blank=True, null=True)
     location = models.PointField()
     location_name = models.CharField("Location Name", max_length=50)
     image = models.ImageField("Profile Picture", upload_to="alerts/%Y/%m/%d", blank=True)

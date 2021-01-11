@@ -20,7 +20,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'password2', 'residence', 'mobile_no', 'first_name', 'last_name',]
     
     def save(self, request):
-        user = User(
+        user = User(    
             username=self.validated_data['username'],
             email=self.validated_data['email'],
             residence=self.validated_data['residence'],
