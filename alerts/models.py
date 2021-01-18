@@ -38,3 +38,21 @@ class Alert(models.Model):
     # def get_absolute_url(self):
     #     return reverse("alert_detail", kwargs={"pk": self.pk})
 
+
+class Response(models.Model):
+    is_declined = models.BooleanField("Is Declined", default=False)
+    responded_on = models.DateTimeField("Response Time", auto_now=False, auto_now_add=False)
+    responded_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_from", on_delete=models.CASCADE)
+    responded_to = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_to", on_delete=models.CASCADE)
+    response = models.TextField("Response")
+    alert = models.ForeignKey(Alert, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Response"
+        verbose_name_plural = "Responses"
+
+    def __str__(self):
+        return self.response
+
+    # def get_absolute_url(self):
+    #     return reverse("Response_detail", kwargs={"pk": self.pk})
