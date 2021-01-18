@@ -24,8 +24,8 @@ class Alert(models.Model):
     response_time = models.DateTimeField("Response Time", blank=True, null=True)
     location = models.PointField()
     location_name = models.CharField("Location Name", max_length=50)
-    image = models.ImageField("Profile Picture", upload_to="alerts/%Y/%m/%d", blank=True)
-    responder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="responseder", blank=True, on_delete=models.CASCADE)
+    image = models.ImageField("Scene Picture", upload_to="alerts/%Y/%m/%d", blank=True)
+    # responder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="responseder", blank=True, on_delete=models.CASCADE)
     
 
     class Meta:
@@ -38,6 +38,7 @@ class Alert(models.Model):
     # def get_absolute_url(self):
     #     return reverse("alert_detail", kwargs={"pk": self.pk})
 
+# Alert images
 
 class Response(models.Model):
     is_declined = models.BooleanField("Is Declined", default=False)

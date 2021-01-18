@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block style %}
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/map.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            alerts interface
+        </div>
+        <div class="col-md-12">
+            <!-- chat room interface -->
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+
+{% endblock %}
