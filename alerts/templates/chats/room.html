@@ -1,26 +1,221 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %} Chat Room {% endblock %}
 
 {% block style %}
-    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'css/map.css' %}">
+    <style>
+        .container {
+            box-shadow: 1px 1px 0.2em var( --light-gray);
+        }
+
+        .alert-header, .chat-header {
+            padding: 1em;
+            
+        }
+
+        .col-md-3, .col-md-6 {
+            padding: 0;
+            border: 1px solid var(--gray2);
+        }
+
+        .col-md-3 {
+            border:0px solid var(--gray2);
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+        }
+
+        .chat-item {
+            border-bottom: 1px solid var(--gray2);
+        }
+
+        .chat-area {
+            height: 400px;
+            border-top: 1px solid var(--gray2);
+            overflow-y: scroll;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: flex-start;
+            /* position: absolute; */
+            bottom: 0;
+            width: 100%;
+            background-color: #fdfdfd;
+            margin: 0 !important;
+        }
+
+        h5 {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .alerts-list {
+            border-top:1px solid var(--gray2)
+        }
+
+        .chat-area {
+
+        }
+
+        .message {
+            background-color:#ddd;
+            color:black;
+            background-color: #ddd;
+            padding: 0.2em;
+            font-size: 0.91em;
+            margin: 0.5em;
+            width: 60%;
+            position: relative;
+            border-radius: 0.5em;
+            box-shadow: 1px 1px 0.2em #333;
+        }
+
+        .date {
+            position: absolute;
+            bottom: 1%;
+            right: 2%;
+            font-size: 0.8em;
+        }
+
+        .me {
+            float:right;
+        }
+
+        .other {
+            float: left;
+        }
+
+        .list-group-item {
+            padding:0.3em 0.2em;
+            display: flex;
+            align-items: center;
+            /* justify-content: space-evenly; */
+            font-size: 0.9em;
+        }
+
+        .img-circle {
+            border-radius: 50%;
+            height: 50px;
+            width: 50px;
+            object-fit: cover;
+        }
+
+        textarea {
+            min-height: 39px;
+        }
+        
+        .form-control, .btn {
+            border-radius: 0px !important;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-5">
     <div class="row">
-        <div class="col-md-4">
-            alerts interface
-        </div>
-        <div class="col-md-12">
-            <!-- chat room interface -->
+        <div class="col-md-3">
+            <div class="alert-header">
+                <span>View Alert Connversation</span>
+                <i class="fa fa-search"></i>
+            </div>
 
+            <div class="alerts-list list-group">
+                {% for alert in alerts %}
+                    <div class="list-group-item">
+                        <img src="https://picsum.photos/id/237/200/300" alt="" class="img-circle mr-2">
+                        <div class="">
+                            <h5 class="mb-0">
+                                <a href="/chat/room/{{alert.id}}">{{ alert.description }}</a>
+                            </h5>
+                            <span>{{ alert.emergency_type }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-6 chat-section">
+            <!-- chat room interface -->
+            <div class="chat-header">
+                <h5>{{ alert.description }}</h5>
+            </div>
+
+            <div class="chat-area" id="chat">
+
+            </div>
+            <div class="form-group mb-1">
+                <textarea name="text" class="form-control" id="message" cols="30" rows="1"></textarea>
+                <button type="submit" class="btn btn-primary" id="submit">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h5 class="text-center">Alert Information</h5>
         </div>
     </div>
 </div>
 {% endblock %}
 {% block javascript %}
+<script>
+    var url = 'ws://' + window.location.host + '/ws/chat/room/' + '{{alert.id}}/';
 
+    var chatSocket = new WebSocket(url);
+    chatSocket.onmessage = function(e) {
+        let data = JSON.parse(e.data);
+        let { message, user, datetime } = data;
+        console.log(e);
+
+        var chat = $('#chat');
+
+        var dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
+        var dateTime = new Date(datetime).toLocaleString('en',dateOptions);
+
+        var isMe = user === '{{ request.user }}';
+        var source = isMe ? 'me' : 'other';
+        var name = isMe ? 'Me' : user;
+
+        chat.append('<div class="message ' + source + '">' +
+            '<strong>' + name + '</strong> ' +
+            '<span class="date">' + dateTime + '</span><br>' +
+            message +
+            '</div>');
+            
+        chat.scrollTop(chat[0].scrollHeight);
+    };
+
+    chatSocket.onclose = function(e) {
+        console.log("Chat closed unexpectedly");
+    }
+
+
+    var inputMessage = $('#message');
+    var submitButton = $('#submit');
+
+    submitButton.on("click", function(e) {
+        // get the message
+        let message = inputMessage.val();
+        console.log(message);
+
+        if(!message) return;
+
+        // send the message
+        chatSocket.send(JSON.stringify({'message':message}))
+
+        // reset the form input
+        inputMessage.val("");
+        inputMessage.focus();
+
+        inputMessage.keyup(function(e) {
+            if (e.which === 13) {
+                // submit with enter / return key
+                submitButton.click();
+            }
+        });
+
+    });
+</script>
 {% endblock %}

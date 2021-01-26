@@ -12,4 +12,4 @@ class AlertAdmin(LeafletGeoAdmin):
 class ResponseAdmin(admin.ModelAdmin):
     list_display = ('response', 'responded_on', 'responded_by', 'responded_to')
     search_fields = ('response', 'responded on')
-    list_filter = ('is_declined')
+    list_filter = ('is_declined',)

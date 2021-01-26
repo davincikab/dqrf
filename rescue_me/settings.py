@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'rest_auth.registration',
     'leaflet',
+    'channels',
 
     #local
     'accounts',
     'alerts',
     'api',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +77,22 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'rescue_me.wsgi.application'
+ASGI_APPLICATION = 'rescue_me.asgi.application'
 
+# channels layer
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+# redis
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -154,5 +171,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
-GDAL_LIBRARY_PATH = 'C:/OSGeo4W64/bin/gdal204'
-GEOS_LIBRARY_PATH = 'C:/Program Files/PostgreSQL/12/bin/libgeos_c'
+GDAL_LIBRARY_PATH = "C:/Program Files/GDAL/gdal302"
+# # GEOS_LIBRARY_PATH = 'C:/Program Files/PostgreSQL/12/bin/libgeos_c'
