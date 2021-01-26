@@ -230,7 +230,13 @@ function registerListeners() {
             e.preventDefault();
                 alertId = this.getAttribute("data-alert-id");
             // open decline modal
-            $('#decline-modal').modal('toggle');
+            let myModal = $('#decline-modal');
+            myModal.modal('toggle');
+            
+            // connect to a websocket
+             var submitButton = $("#decline");
+             var inputMessage = $("#decline-field");
+            let webSocket = connectToChatWebSocket(alertId, submitButton, inputMessage, myModal);
         });
     });
 
@@ -239,7 +245,14 @@ function registerListeners() {
             e.preventDefault();
             alertId = this.getAttribute("data-alert-id");
             // open respond modal
-            $('#response-modal').modal('toggle');
+            let myModal = $('#response-modal');
+            myModal.modal('toggle');
+            
+            // connect to a websocket
+            console.log("Home coming");
+            var submitButton = $("#response");
+            var inputMessage = $("#response-field");
+            let webSocket = connectToChatWebSocket(alertId, submitButton, inputMessage, myModal);
         });
     });
 
@@ -415,7 +428,7 @@ class LayerControl {
             input.id = layerName.toLowerCase();
             input.value = layer; 
             
-            input.checked = map.getLayoutProperty(layer, 'visiblility') == 'visible' ? true : false;
+            input.checked = map.getLayer(layer) && map.getLayoutProperty(layer, 'visiblility') == 'visible' ? true : false;
 
             let div = document.createElement("div");
             div.classList.add("d-flex");
@@ -463,3 +476,49 @@ function toggleLayer(e) {
 // ALERT TYPES
 // ALERT STATUS
 // SCROLL: STATIC MAP
+function connectToChatWebSocket(alert_id, submitButton, inputMessage, myModal) {
+    var url = 'ws://' + window.location.host + '/ws/chat/room/' + alert_id + '/';
+    console.log(url);
+    var chatSocket = new WebSocket(url);
+
+    chatSocket.onmessage = function(e) {
+        let data = JSON.parse(e.data);
+        console.log(data);
+    }
+
+    chatSocket.onclose = function(e) {
+        console.log("Chat closed unexpectedly");
+    }
+
+    submitButton.on("click", function(e) {
+        console.log("Sending text message")
+        // get the message
+        let message = inputMessage.val();
+        console.log(message);
+
+        if(!message) return;
+
+        // send the message
+        chatSocket.send(JSON.stringify({'message':message}))
+
+        // reset the form input
+        inputMessage.val("");
+        inputMessage.focus();
+
+        inputMessage.keyup(function(e) {
+            if (e.which === 13) {
+                // submit with enter / return key
+                submitButton.click();
+            }
+        });
+
+        // close the modal 
+        myModal.modal('toggle');
+
+        // close webskocket
+        chatSocket.close(4000, "Message Sent");
+
+    });
+
+    
+}

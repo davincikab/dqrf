@@ -1,3 +1,4 @@
+{% load humanize %}
 {% for alert in alerts %}
 <div class="card">
     <div class="card" data-id="{{ alert.pk }}">
@@ -6,6 +7,7 @@
               <i class="fa fa-plus"></i>
              {{ alert.emergency_type }}
           </h6>
+
          <div class="info">
             <p class="badge">Status {{ alert.status }}</p>
             <p>
@@ -19,7 +21,7 @@
             </p>
             <p>
               <i class="fa fa-calendar"></i>
-               {{ alert.time }}
+               {{ alert.time | naturaltime }}
             </p>
          </div>
 

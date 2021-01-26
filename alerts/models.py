@@ -31,6 +31,7 @@ class Alert(models.Model):
     class Meta:
         verbose_name = "Alert"
         verbose_name_plural = "Alerts"
+        ordering = ['-time']
 
     def __str__(self):
         return self.emergency_type

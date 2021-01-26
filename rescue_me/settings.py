@@ -14,7 +14,7 @@ SECRET_KEY = 'nr31eoz+s=)&lzntn1u8mtedk!!mwyv)%-&babj#5&espporru'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['d7223759bea9.ngrok.io', 'localhost']
+ALLOWED_HOSTS = ['a441f4370e28.ngrok.io', 'localhost']
 
 
 # Application definition
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.humanize',
 
     # 3rd Party
     'rest_framework',

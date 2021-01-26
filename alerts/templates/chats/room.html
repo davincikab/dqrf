@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %} Chat Room {% endblock %}
-
+{% load humanize %}
 {% block style %}
     <style>
         .container {
@@ -63,14 +64,14 @@
         .message {
             background-color:#ddd;
             color:black;
-            background-color: #ddd;
+            background-color: #fff;
             padding: 0.2em;
             font-size: 0.91em;
             margin: 0.5em;
             width: 60%;
             position: relative;
-            border-radius: 0.5em;
-            box-shadow: 1px 1px 0.2em #333;
+            border-radius: 0.3em;
+            box-shadow:  2px 2px 0.5em #ccc;
         }
 
         .date {
@@ -92,14 +93,27 @@
             padding:0.3em 0.2em;
             display: flex;
             align-items: center;
-            /* justify-content: space-evenly; */
+            border-radius: 0px !important;
             font-size: 0.9em;
+        }
+
+        .list-group-item a {
+            color:var(--black) !important;
+        }
+
+        .list-group-item.active {
+            background-color: #00800026;
+            border:0px;
+        }
+
+        .list-group-item:hover {
+            background-color: #faf9f9db;
         }
 
         .img-circle {
             border-radius: 50%;
-            height: 50px;
-            width: 50px;
+            height: 35px;
+            width: 35px;
             object-fit: cover;
         }
 
@@ -110,6 +124,54 @@
         .form-control, .btn {
             border-radius: 0px !important;
         }
+
+        /* alerts */
+        .alert-header {
+            position: relative;
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .alert-header img  {
+            /* height: 40vh; */
+            height: 100px;
+            width:100px;
+        }
+        .alert-header .fa {
+            border-radius: 50%;
+            color:var(--red);
+            padding: 1em;
+        }
+
+        .alert-header p {
+            color:var(--white);
+        }
+
+        .alert-header .badge {
+            position:absolute;
+            bottom:2%;
+            right:2%;
+            background-color: var(--white);
+            color:var(--primary);
+            padding:0.1em 0.2em;
+        }
+
+        .info div {
+            padding: 0.4em 0.7em;
+            border:0.5px solid var(--gray2);
+            border-width: 0px 0px 0.5px 0px;
+            font-size: 0.9rem;
+        }
+
+        .info div .fa {
+            margin-left: 1em;
+            margin-right: 1em;
+        }
+
     </style>
 {% endblock %}
 
@@ -117,20 +179,20 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-3">
-            <div class="alert-header">
+            <div class="py-3 px-2">
                 <span>View Alert Connversation</span>
                 <i class="fa fa-search"></i>
             </div>
 
             <div class="alerts-list list-group">
                 {% for alert in alerts %}
-                    <div class="list-group-item">
+                    <div class="list-group-item py-3 px-3 {% if alert.id == activeAlert.id %} active {% endif %}">
                         <img src="https://picsum.photos/id/237/200/300" alt="" class="img-circle mr-2">
-                        <div class="">
+                        <div class="mr-2">
                             <h5 class="mb-0">
-                                <a href="/chat/room/{{alert.id}}">{{ alert.description }}</a>
+                                <a href="/chat/room/{{alert.id}}" class="text-black">{{ alert.description }}</a>
                             </h5>
-                            <span>{{ alert.emergency_type }}</span>
+                            <span class="text-muted">{{ alert.emergency_type }}</span>
                         </div>
                     </div>
                 {% endfor %}
@@ -139,11 +201,21 @@
         <div class="col-md-6 chat-section">
             <!-- chat room interface -->
             <div class="chat-header">
-                <h5>{{ alert.description }}</h5>
+                <h5>{{ activeAlert.description }}</h5>
+                <small class="text-muted">{{ activeAlert.response_time | naturalday }}</small>
             </div>
 
             <div class="chat-area" id="chat">
-
+                <!-- list of charts -->
+                {% for message in messages %}
+                    <div class="message {% if message.author == user %} me {% else %} other {% endif %}" >
+                        <strong>
+                            {% if message.author == user %} me {% else %} {{ message.author.username }} {% endif %}
+                        </strong> 
+                        <span class="date">{{ message.time | naturaltime }}</span><br>
+                            {{ message.text }}
+                    </div>
+                {% endfor %}
             </div>
             <div class="form-group mb-1">
                 <textarea name="text" class="form-control" id="message" cols="30" rows="1"></textarea>
@@ -154,22 +226,45 @@
         </div>
 
         <div class="col-md-3">
-            <h5 class="text-center">Alert Information</h5>
+            <h5 class="text-center py-2">Alert Information</h5>
+
+            <div class="">
+                <div class="map"></div>
+                <div class="alert-header bg-primary text-center">
+                    <div>
+                        <img src="https://picsum.photos/200" alt="" class="img-circle">
+                    </div>
+                    <small>{{ activeAlert.reported_by.username }}</small>
+                    <p class="badge">Status  {{ activeAlert.status }} </p>
+               </div>
+               <div class="alert-description">
+                    <div class="info">
+                        <div><i class="fa fa-info"></i> {{ activeAlert.location_name }} </div>
+                        <!-- <div><i class="fa fa-phone"></i>{{ activeAlert.user.phone_number }}</div> -->
+                        <div><i class="fa fa-home"></i> {{ activeAlert.location_name }} , Nyeri, Kenya</div>
+                        <div><i class="fa fa-calendar"></i> {{ activeAlert.time |naturaltime }}</div>
+                     </div>
+
+                     <div class="media">
+                         
+                     </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 {% block javascript %}
 <script>
-    var url = 'ws://' + window.location.host + '/ws/chat/room/' + '{{alert.id}}/';
+    var url = 'ws://' + window.location.host + '/ws/chat/room/' + '{{ activeAlert.id }}/';
+    var chat = $('#chat');
+    chat.scrollTop(chat[0].scrollHeight);
 
     var chatSocket = new WebSocket(url);
     chatSocket.onmessage = function(e) {
         let data = JSON.parse(e.data);
         let { message, user, datetime } = data;
         console.log(e);
-
-        var chat = $('#chat');
 
         var dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
         var dateTime = new Date(datetime).toLocaleString('en',dateOptions);

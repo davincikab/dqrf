@@ -2,10 +2,33 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 from channels.db import database_sync_to_async
+from .models import Message
+from alerts.models import Alert
+
+User = get_user_model()
 
 class ChatConsumer(WebsocketConsumer):
+    def new_message(self, message):
+        print(message)
+        user = self.user
+
+        alert_id = int(self.room_name)
+        alert = self.get_alert(alert_id)
+
+        userMessage = Message.objects.create(
+            text=message,
+            author=user,
+            alert=alert
+        )
+
+        return self.send_chat_message(message)
+
+    def get_alert(self, alert_id):
+        return Alert.objects.get(pk=alert_id)
+    
     def connect(self):
         self.user = self.scope['user']
         self.room_name = self.scope['url_route']['kwargs']['alert_id']
@@ -25,9 +48,13 @@ class ChatConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data):
-        print(text_data)
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+
+        self.new_message(message)
+        
+
+    def send_chat_message(self, message):
         now = timezone.now()
 
         async_to_sync(self.channel_layer.group_send)(
