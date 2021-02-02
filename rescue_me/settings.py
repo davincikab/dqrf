@@ -14,11 +14,10 @@ SECRET_KEY = 'nr31eoz+s=)&lzntn1u8mtedk!!mwyv)%-&babj#5&espporru'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['a441f4370e28.ngrok.io', 'localhost']
+ALLOWED_HOSTS = ['a35c661b1c02.ngrok.io', 'localhost']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.gis',
     'django.contrib.admin',

@@ -20,3 +20,5 @@ def room(request, alert_id):
     }
 
     return render(request, 'chats/room.html', context)
+
+# if event is resolved redirect to list of active events

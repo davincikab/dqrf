@@ -3,13 +3,25 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from alerts.models import Alert
 from accounts.models import User
-
+from chat.models import Message
 
 class AlertSerializer(GeoFeatureModelSerializer):
+    username = serializers.CharField(source="reported_by.username", read_only=True)
     class Meta:
         model = Alert
         geo_field = 'location'
-        fields = ('pk','status', 'reported_by', 'emergency_type', 'description', 'location','time', 'response_time', 'location_name', 'image')
+        fields = ('pk','status', 'reported_by', 'emergency_type', 'description', 'location','time', 'response_time', 'location_name', 'image', 'username')
+
+class MessageSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="author.username", read_only=True)
+    class Meta:
+        model = Message
+        fields = ('text', 'author', 'alert', 'time', 'is_read','username', 'pk')
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('pk', 'username', 'first_name', 'mobile_no', 'residence')
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

@@ -9,8 +9,9 @@ class Message(models.Model):
     is_read = models.BooleanField("Is Read", default=False)
     time = models.DateTimeField("Response Time", auto_now=True)
     author = models.ForeignKey(User, related_name="author", on_delete=models.CASCADE)
-    text = models.TextField("Response")
+    text = models.TextField("Response", blank=True)
     alert = models.ForeignKey(Alert, on_delete=models.CASCADE)
+    image = models.ImageField("Image", upload_to="messages/%Y/%m/", blank=True)
 
     class Meta:
         verbose_name = "Message"
