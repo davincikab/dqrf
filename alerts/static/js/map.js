@@ -6,6 +6,11 @@ var viewAllRecords = document.getElementById('all-records');
 var declineAlerts = document.querySelectorAll(".decline");
 var respondAlerts = document.querySelectorAll('.response');
 var alerts = document.querySelectorAll(".view");
+var refreshAlerts = document.getElementById("refresh-alerts");
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 var map = new mapboxgl.Map({
     container: 'map',
@@ -36,7 +41,7 @@ map.on('load', function(e) {
             'fill-color':'green',
         },
         'layout':{
-
+            'visibility':'none'
         }
     });
 
@@ -73,6 +78,9 @@ map.on('load', function(e) {
         'paint':{
             'fill-color':'#938446',
         },
+        'layout':{
+            'visibility':'none'
+        }
     });
 
     // fetch forest data
@@ -103,7 +111,7 @@ function fetchAlerts(){
 
         // create the markers and the respective popup  
         renderMarkers(allAlerts);
-        renderAlertListing(allAlerts);
+        renderAlertListings(allAlerts);
 
         // query all the cards
         declineAlerts = document.querySelectorAll(".decline");
@@ -114,7 +122,7 @@ function fetchAlerts(){
         registerListeners();
     })
     .catch(error  => {
-        console.error(data)
+        console.error(error)
     });
 
     // accident spots
@@ -147,81 +155,146 @@ function fetchAlerts(){
     });
 }
 
-function renderAlertListing(features) {
+function renderAlertListings(features) {
     let docFragment = document.createDocumentFragment();
 
     features.forEach(feature => {
-        let element = document.createElement("div");
-        element.classList.add('card');
-        element.id = 'alert-' + feature.properties.pk;
-        element.setAttribute('data-alert-id', feature.properties.pk);
-
-        element.innerHTML = cardElement(feature);
-
-        element.addEventListener('mouseover', function(e) {
-            this.classList.add('active');
-            let alertId = this.getAttribute('data-alert-id');
-            let alert = getAlertById(alertId);
-
-            map.easeTo({
-                center:alert.geometry.coordinates,
-                zoom:16
-            });
-
-            // console.log(this.classList);
-        });
-
-        element.addEventListener('mouseout', function(e) {
-            this.classList.remove('active');
-        });
-
+        let element = renderAlertListing(feature);
         docFragment.append(element);
     });
 
     $('#alerts-section').append(docFragment);
 }
 
-function renderMarkers(features) {
-    features.forEach(feature => {
-        let element = '<div class="card">'+ cardElement(feature) +
-        '</div>';
+function renderAlertListing(feature) {
+    let element = document.createElement("div");
+    element.classList.add('card');
+    element.id = 'alert-' + feature.properties.pk;
+    element.setAttribute('data-alert-id', feature.properties.pk);
 
-        let popup = new mapboxgl.Popup()
-            .setHTML(element);
+    element.innerHTML = cardElement(feature);
 
-        // custom marker element
-        let divMarker = document.createElement('div');
-        divMarker.classList.add('marker-element');
-        divMarker.innerHTML = '<i class="fa fa-info"></i>'
+    element.addEventListener('mouseover', function(e) {
+        this.classList.add('active');
+        let alertId = this.getAttribute('data-alert-id');
+        let alert = getAlertById(alertId);
 
-        let status = feature.properties.status; 
+        map.easeTo({
+            center:alert.geometry.coordinates,
+            zoom:16
+        });
 
-        let marker = new mapboxgl.Marker({element:divMarker})
-            .setLngLat(feature.geometry.coordinates)
-            .setPopup(popup)
-            .addTo(map);
+        // console.log(this.classList);
     });
 
+    element.addEventListener('mouseout', function(e) {
+        this.classList.remove('active');
+    });
+
+    return element;
+}
+
+function renderMarkers(features) {
+    features.forEach(feature => {
+        renderMarker(feature);
+    });
+
+}
+
+function renderMarker(feature) {
+    let element = '<div class="">'+ 
+    '<h6 class="card-title text-black">'+
+        feature.properties.emergency_type +
+        '<br><small><i class="fa fa-map-marker mr-1"></i>'+ feature.properties.location_name +'</small>' +
+    '</h6>'+ 
+    '<p><i class="fa fa-user"></i>'+ feature.properties.username +'</p>'+
+    '</div>';
+
+    let popup = new mapboxgl.Popup()
+        .setHTML(element);
+    
+    popup.on("open", function(e) {
+        console.log("popup open");
+        console.log(feature);
+
+        let innerHtml = updateSideTabContent(feature);
+        $('#side-tab-body').html(innerHtml);
+
+        // toggle side-tab right
+        $('#side-tab').removeClass('d-none');
+    });
+
+    // custom marker element
+    let divMarker = document.createElement('div');
+    divMarker.classList.add('marker-element');
+    divMarker.innerHTML = '<i class="fa fa-info"></i>'
+
+    let status = feature.properties.status; 
+
+    let marker = new mapboxgl.Marker({element:divMarker})
+        .setLngLat(feature.geometry.coordinates)
+        .setPopup(popup)
+        .addTo(map);
 }
 
 function cardElement(feature) {
     let time = new Date(feature.properties.time);
 
-    return  '<div class="card-body">'+
-    '<h6 class="card-title text-white"> <i class="fa fa-plus mr-2"></i>'+
-    feature.properties.emergency_type +
-    '</h6>'+
+    return  '<div class="card-body mb-3">'+
+    '<div class="card__header">'+
+        '<i class="fa fa-plus mr-2 icon"></i>'+
+        '<h6 class="card-title text-black">'+
+            feature.properties.emergency_type +
+            '<br><small><i class="fa fa-map-marker mr-1"></i>'+ feature.properties.location_name +'</small>' +
+        '</h6>'+
+    '</div>'+
+    
+    createCarousel(feature.properties.alert_image, feature.properties.pk) +
     '<div class="info">'+
-        '<p class="badge">Status '+ feature.properties.status +'</p>'+
-        '<p><i class="fa fa-map-marker"></i>' + feature.properties.location_name +'</p>'+
-        '<p><i class="fa fa-phone"></i>+254789794774</p>'+
-        '<p><i class="fa fa-home"></i>'+ feature.properties.location_name +', Nyeri, Kenya</p>'+
-        '<p><i class="fa fa-calendar"></i>'+ time +'</p>'+
+        '<p class="badge">'+ feature.properties.status +'</p>'+
+        '<p><i class="fa fa-user"></i>'+ feature.properties.username +'</p>'+
+        '<p><i class="fa fa-calendar"></i>'+ monthNames[time.getMonth()] +" "+ time.getDay() +'</p>'+
     '</div>'+
     '<button class="btn btn-danger btn-sm mx-2 decline" data-alert-id="'+ feature.properties.pk +'">Decline</button>'+
     '<button class="btn btn-success btn-sm mr-1 response" data-alert-id="'+ feature.properties.pk +'">Respond</button>'+
     '<button class="btn btn-dark btn-sm mr-1 view" data-alert-id="'+ feature.properties.pk +'">View</button>'+
     '</div>';
+}
+
+function createCarousel(images, id) {
+
+    let items = images.map((image , index) => {
+        if(index == 0) {
+            return '<div class="carousel-item active">' +
+                '<img src="'+ image.image +'" class="d-block w-100" alt="...">'+
+            '</div>'
+        }
+
+        return '<div class="carousel-item">' +
+        '<img src="'+ image.image +'" class="d-block w-100" alt="...">'+
+      '</div>'
+    });
+
+    if(images.length == 0) {
+        return "";
+    }
+
+    let carouselId = "carousel-" + id;
+    let carousel = `<div id="${carouselId}" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            ${items.join("")}
+        </div>
+        <a class="carousel-control-prev" href="${carouselId}" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="${carouselId}" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+        </div>`;
+
+        return carousel;
 }
 
 function registerListeners() {
@@ -236,7 +309,7 @@ function registerListeners() {
             // connect to a websocket
              var submitButton = $("#decline");
              var inputMessage = $("#decline-field");
-            let webSocket = connectToChatWebSocket(alertId, submitButton, inputMessage, myModal);
+            let webSocket = connectToChatWebSocket(alertId, submitButton, inputMessage, myModal, true);
         });
     });
 
@@ -252,7 +325,7 @@ function registerListeners() {
             console.log("Home coming");
             var submitButton = $("#response");
             var inputMessage = $("#response-field");
-            let webSocket = connectToChatWebSocket(alertId, submitButton, inputMessage, myModal);
+            let webSocket = connectToChatWebSocket(alertId, submitButton, inputMessage, myModal, false);
         });
     });
 
@@ -288,6 +361,8 @@ function updateSideTabContent(feature) {
                 '<div><i class="fa fa-home"></i>'+ feature.properties.location_name +', Nyeri, Kenya</div>'+
                 '<div><i class="fa fa-calendar"></i>'+ feature.properties.time +'</div>'+
              '</div>'+
+             '<div>'+ feature.properties.description +'</div>'+
+             '<a href="/chat/room/'+ feature.properties.pk+'" class="btn btn-primary" >Chat Room</a>'+
         '</div>';
     
 }
@@ -367,7 +442,7 @@ $(viewAllRecords).on('click', function(e) {
     if(this.innerText.includes('New')) {
         $('#alerts-section').html("");
 
-        renderAlertListing(allAlerts);
+        renderAlertListings(allAlerts);
         viewAllRecords.innerHTML = '<i class="fa fa-eye"></i>View all Records';
         return;
     }
@@ -429,6 +504,7 @@ class LayerControl {
             input.value = layer; 
             
             input.checked = map.getLayer(layer) && map.getLayoutProperty(layer, 'visiblility') == 'visible' ? true : false;
+            input.checked = layer == 'accidentspots' ? true : true;
 
             let div = document.createElement("div");
             div.classList.add("d-flex");
@@ -476,7 +552,7 @@ function toggleLayer(e) {
 // ALERT TYPES
 // ALERT STATUS
 // SCROLL: STATIC MAP
-function connectToChatWebSocket(alert_id, submitButton, inputMessage, myModal) {
+function connectToChatWebSocket(alert_id, submitButton, inputMessage, myModal, declined) {
     var url = 'ws://' + window.location.host + '/ws/chat/room/' + alert_id + '/';
     console.log(url);
     var chatSocket = new WebSocket(url);
@@ -499,7 +575,11 @@ function connectToChatWebSocket(alert_id, submitButton, inputMessage, myModal) {
         if(!message) return;
 
         // send the message
-        chatSocket.send(JSON.stringify({'message':message}))
+        if(declined) {
+            chatSocket.send(JSON.stringify({'message':message, 'declined':true}))
+        } else {
+            chatSocket.send(JSON.stringify({'message':message}))
+        }
 
         // reset the form input
         inputMessage.val("");
@@ -520,5 +600,47 @@ function connectToChatWebSocket(alert_id, submitButton, inputMessage, myModal) {
 
     });
 
-    
 }
+
+// recieve alerts on creation
+let url = 'ws://' + window.location.host + '/ws/chat/alerts/group_alerts';
+const alertWebSocket = new WebSocket(url);
+
+alertWebSocket.onopen = function(e) {
+    console.log("Socket open");
+}
+
+
+alertWebSocket.onmessage = function(e) {
+    console.log(e);
+    let data = JSON.parse(e.data); 
+    console.log(data);  
+
+    let alert = JSON.parse(data.message);
+    console.log(alert.features[0]);
+
+    // update cardList update alerts
+    allAlerts.push(alert.features[0]);
+    renderMarker(alert.features[0]);
+
+    // update list
+    let newAlert = alert.features[0];
+    newAlert.properties.alert_image = [];
+
+    let element = renderAlertListing(newAlert);
+    $('#alerts-section').prepend(element);
+}
+
+
+alertWebSocket.onclose = function() {
+    console.log("chat closed unexpectedly");
+}
+
+// implement data pulling
+refreshAlerts.addEventListener("click", function(e) {
+    // updateAlerts();
+    // fetchAlerts()
+
+    // create feeds
+    
+});

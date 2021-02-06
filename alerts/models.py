@@ -39,8 +39,17 @@ class Alert(models.Model):
     # def get_absolute_url(self):
     #     return reverse("alert_detail", kwargs={"pk": self.pk})
 
-# Alert images
+class AlertImage(models.Model):
+    alert = models.ForeignKey(Alert, related_name="alert_image", on_delete=models.CASCADE)
+    image = models.ImageField("Image", upload_to="alert/%Y/%m")
 
+    class Meta:
+        verbose_name = "Alert Image"
+
+    def __str__(self):
+        return self.alert.reported_by.username
+    
+# Alert images
 class Response(models.Model):
     is_declined = models.BooleanField("Is Declined", default=False)
     responded_on = models.DateTimeField("Response Time", auto_now=False, auto_now_add=False)

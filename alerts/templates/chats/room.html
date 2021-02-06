@@ -54,7 +54,9 @@
         }
 
         .alerts-list {
-            border-top:1px solid var(--gray2)
+            border-top:1px solid var(--gray2);
+            height: 450px;
+            overflow-y: scroll;
         }
 
         .chat-area {
@@ -172,6 +174,13 @@
             margin-right: 1em;
         }
 
+        .img-chat {
+            height: 200px;
+            width: 100%;
+            object-fit: contain;
+            background: saddlebrown;
+        }
+
     </style>
 {% endblock %}
 
@@ -202,7 +211,7 @@
             <!-- chat room interface -->
             <div class="chat-header">
                 <h5>{{ activeAlert.description }}</h5>
-                <small class="text-muted">{{ activeAlert.response_time | naturalday }}</small>
+                <small class="text-muted">{{ activeAlert.time | naturalday }}</small>
             </div>
 
             <div class="chat-area" id="chat">
@@ -213,7 +222,12 @@
                             {% if message.author == user %} me {% else %} {{ message.author.username }} {% endif %}
                         </strong> 
                         <span class="date">{{ message.time | naturaltime }}</span><br>
-                            {{ message.text }}
+                            
+                            {% if message.image %}
+                                <img src="/media/{{message.image}}" class="img-chat" height="200px">
+                            {% else %}
+                                {{ message.text }}
+                            {% endif %}
                     </div>
                 {% endfor %}
             </div>
@@ -232,7 +246,11 @@
                 <div class="map"></div>
                 <div class="alert-header bg-primary text-center">
                     <div>
-                        <img src="https://picsum.photos/200" alt="" class="img-circle">
+                        {% if image %}
+                            <img src="/media/{{image.image}}" alt="" class="img-circle">
+                        {% else %}
+                            <img src="https://picsum.photos/200" alt="" class="img-circle">
+                        {% endif %}
                     </div>
                     <small>{{ activeAlert.reported_by.username }}</small>
                     <p class="badge">Status  {{ activeAlert.status }} </p>
@@ -298,7 +316,7 @@
         if(!message) return;
 
         // send the message
-        chatSocket.send(JSON.stringify({'message':message}))
+        chatSocket.send(JSON.stringify({'message':message, declined:false}))
 
         // reset the form input
         inputMessage.val("");

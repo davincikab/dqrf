@@ -14,7 +14,7 @@ SECRET_KEY = 'nr31eoz+s=)&lzntn1u8mtedk!!mwyv)%-&babj#5&espporru'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['a35c661b1c02.ngrok.io', 'localhost']
+ALLOWED_HOSTS = ['f1c9fe108adf.ngrok.io', 'localhost']
 
 
 # Application definition
@@ -134,7 +134,7 @@ SITE_ID = 1
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ],
+    ],  
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',

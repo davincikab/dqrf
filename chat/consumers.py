@@ -11,12 +11,16 @@ from alerts.models import Alert
 User = get_user_model()
 
 class ChatConsumer(WebsocketConsumer):
-    def new_message(self, message):
+    def new_message(self, message, declined=False):
         print(message)
         user = self.user
 
         alert_id = int(self.room_name)
         alert = self.get_alert(alert_id)
+
+        if declined:
+            alert.status = "DECLINED"
+            alert.save()
 
         userMessage = Message.objects.create(
             text=message,
@@ -30,8 +34,11 @@ class ChatConsumer(WebsocketConsumer):
         return Alert.objects.get(pk=alert_id)
     
     def connect(self):
+        print("Connecting")
         self.user = self.scope['user']
         self.room_name = self.scope['url_route']['kwargs']['alert_id']
+
+        print(self.room_name)
         self.room_group_name = 'chat_%s' % self.room_name
 
         async_to_sync(self.channel_layer.group_add)(
@@ -48,10 +55,12 @@ class ChatConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data):
+        print("message recieved")
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        declined = text_data_json['declined'] or False
 
-        self.new_message(message)
+        self.new_message(message, declined)
         
 
     def send_chat_message(self, message):
@@ -72,16 +81,8 @@ class ChatConsumer(WebsocketConsumer):
         message = event['message']
 
         self.send(text_data=json.dumps(event))
-
-class AlertConsumer(WebsocketConsumer):
-    def connect(self):
-        self.user = self.scope['user']
-        self.accept()
     
-    def disconnect(self):
-        pass
-
-    def recieve(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-        now = timezone.now()
+    def send_alert_message(self, event):
+        print("event triggered")
+        print(event)
+        self.send(text_data=json.dumps(event))

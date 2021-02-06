@@ -38,3 +38,6 @@ def alert_response(request):
         return JsonResponse({'message':'success', 'status':'OK'})
     else:
         return JsonResponse({'message':'error', 'status':'ERR'})
+
+# update alert images
+# def 

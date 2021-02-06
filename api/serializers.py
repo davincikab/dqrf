@@ -1,27 +1,33 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from alerts.models import Alert
+from alerts.models import Alert, AlertImage
 from accounts.models import User
 from chat.models import Message
 
+class AlertImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlertImage
+        fields = ('pk','alert', 'image')
+
 class AlertSerializer(GeoFeatureModelSerializer):
     username = serializers.CharField(source="reported_by.username", read_only=True)
+    alert_image = AlertImageSerializer(many=True, read_only=True)
     class Meta:
         model = Alert
         geo_field = 'location'
-        fields = ('pk','status', 'reported_by', 'emergency_type', 'description', 'location','time', 'response_time', 'location_name', 'image', 'username')
+        fields = ('pk','status', 'reported_by', 'emergency_type', 'description', 'location','time', 'response_time', 'location_name', 'alert_image', 'username')
 
 class MessageSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="author.username", read_only=True)
     class Meta:
         model = Message
-        fields = ('text', 'author', 'alert', 'time', 'is_read','username', 'pk')
+        fields = ('text', 'author', 'alert', 'time', 'is_read','username', 'pk', 'image')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('pk', 'username', 'first_name', 'mobile_no', 'residence')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'mobile_no', 'residence', 'email')
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
