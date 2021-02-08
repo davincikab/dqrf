@@ -6,6 +6,11 @@
 {% block style %}
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'css/map.css' %}">
+    <link
+rel="stylesheet"
+href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css"
+type="text/css"
+/>
 {% endblock %}
 {% block content %}
 <div class="map-container">
@@ -109,6 +114,7 @@
 {% block javascript %}
     <script src='https://unpkg.com/@turf/turf/turf.min.js'></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
     <script src="https://unpkg.com/pbf@3.0.5/dist/pbf.js"></script>
     <script src="https://unpkg.com/geobuf@3.0.2/dist/geobuf.js"></script>
     <script src="{% static 'js/map.js' %}"></script>

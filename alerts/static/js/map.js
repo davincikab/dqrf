@@ -15,9 +15,16 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v10',
-    center: {lng: 36.94867070615442, lat: -0.4227716770165415},
-    zoom: 14.4
+    center: {lng: 36.96182641058272, lat: -0.3952534846158784},
+    zoom: 15.4
 });
+
+// directions control
+var directionControl = new MapboxDirections({
+    accessToken: mapboxgl.accessToken
+});
+
+map.addControl(directionControl, 'top-right');
 
 map.on('load', function(e) {
     // add map layers
