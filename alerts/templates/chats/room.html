@@ -287,8 +287,8 @@
 
     chatSocket.onmessage = function(e) {
         let data = JSON.parse(e.data);
-        let { message, user, datetime } = data;
-        console.log(e);
+        let { message, user, datetime, image } = data;
+        console.log(data);
 
         var dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
         var dateTime = new Date(datetime).toLocaleString('en',dateOptions);
@@ -297,11 +297,20 @@
         var source = isMe ? 'me' : 'other';
         var name = isMe ? 'Me' : user;
 
-        chat.append('<div class="message ' + source + '">' +
+        if(!image) {
+            chat.append('<div class="message ' + source + '">' +
             '<strong>' + name + '</strong> ' +
             '<span class="date">' + dateTime + '</span><br>' +
             message +
             '</div>');
+        } else {
+            chat.append('<div class="message ' + source + '">' +
+            '<strong>' + name + '</strong> ' +
+            '<span class="date">' + dateTime + '</span><br>' +
+            '<img src="' + image + '" class="img-chat" height="200px">'+
+            '</div>');
+        }
+        
             
         chat.scrollTop(chat[0].scrollHeight);
     };

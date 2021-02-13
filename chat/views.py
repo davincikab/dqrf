@@ -10,7 +10,7 @@ from .models import Message
 def room(request, alert_id):
     alert = get_object_or_404(Alert, pk=alert_id)
     alerts = Alert.objects.filter(status='NEW')
-    messages = Message.objects.filter(alert=alert)[:10]
+    messages = Message.objects.filter(alert=alert)
     images = AlertImage.objects.filter(alert=alert)
 
     if len(images) > 0:

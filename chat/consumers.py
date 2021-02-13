@@ -67,6 +67,11 @@ class ChatConsumer(WebsocketConsumer):
     def send_chat_message(self, message, alertMessage):
         now = timezone.now()
 
+        try:
+            image = alertMessage.image.url
+        except ValueError:
+            image = None
+
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
@@ -75,7 +80,7 @@ class ChatConsumer(WebsocketConsumer):
                 'user': self.user.username,
                 'datetime': alertMessage.time.isoformat(),
                 'pk':alertMessage.pk, 
-                'image':alertMessage.image, 
+                'image':image, 
                 'alert_id':alertMessage.pk, 
                 'author':alertMessage.author
             }
