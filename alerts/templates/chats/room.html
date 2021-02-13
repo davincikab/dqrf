@@ -273,12 +273,18 @@
 </div>
 {% endblock %}
 {% block javascript %}
+<script src="/static/js/reconnecting-websocket.js"></script>
 <script>
     var url = 'ws://' + window.location.host + '/ws/chat/room/' + '{{ activeAlert.id }}/';
     var chat = $('#chat');
     chat.scrollTop(chat[0].scrollHeight);
 
-    var chatSocket = new WebSocket(url);
+    // var chatSocket = new WebSocket(url);
+    var chatSocket = new ReconnectingWebSocket(url);
+    chatSocket.onopen = function() {
+        console.log("Connected");
+    }
+
     chatSocket.onmessage = function(e) {
         let data = JSON.parse(e.data);
         let { message, user, datetime } = data;

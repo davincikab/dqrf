@@ -20,7 +20,9 @@ var map = new mapboxgl.Map({
 });
 
 // directions control
+var STATION_COORDINATES = [36.95880310720918, -0.39338499245063474];
 var directionControl = new MapboxDirections({
+    interactive:false,
     accessToken: mapboxgl.accessToken
 });
 
@@ -214,7 +216,11 @@ function renderMarker(feature) {
         feature.properties.emergency_type +
         '<br><small><i class="fa fa-map-marker mr-1"></i>'+ feature.properties.location_name +'</small>' +
     '</h6>'+ 
-    '<p><i class="fa fa-user"></i>'+ feature.properties.username +'</p>'+
+    '<p><i class="fa fa-user mr-1"></i>'+ feature.properties.username +'</p>'+
+    '<div class="d-flex">'+
+    '<button class="btn btn-outline-primary btn-sm" onclick="toggleSideTab()">View</button>'+
+    '<button class="btn btn-outline-primary btn-sm ml-2" onclick="getDirection(['+ feature.geometry.coordinates +'])">Get Directions</button>'+
+    '</div>'+
     '</div>';
 
     let popup = new mapboxgl.Popup()
@@ -228,7 +234,7 @@ function renderMarker(feature) {
         $('#side-tab-body').html(innerHtml);
 
         // toggle side-tab right
-        $('#side-tab').removeClass('d-none');
+        // $('#side-tab').removeClass('d-none');
     });
 
     // custom marker element
@@ -242,6 +248,16 @@ function renderMarker(feature) {
         .setLngLat(feature.geometry.coordinates)
         .setPopup(popup)
         .addTo(map);
+}
+
+function getDirection(destination) {
+    console.log(destination);
+    directionControl.setOrigin(STATION_COORDINATES);
+    directionControl.setDestination(destination);
+}
+
+function toggleSideTab() {
+    $('#side-tab').removeClass('d-none');   
 }
 
 function cardElement(feature) {

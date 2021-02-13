@@ -28,7 +28,7 @@ class ChatConsumer(WebsocketConsumer):
             alert=alert
         )
 
-        return self.send_chat_message(message)
+        return self.send_chat_message(message, userMessage)
 
     def get_alert(self, alert_id):
         return Alert.objects.get(pk=alert_id)
@@ -40,6 +40,7 @@ class ChatConsumer(WebsocketConsumer):
 
         print(self.room_name)
         self.room_group_name = 'chat_%s' % self.room_name
+        print(self.room_group_name)
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -63,7 +64,7 @@ class ChatConsumer(WebsocketConsumer):
         self.new_message(message, declined)
         
 
-    def send_chat_message(self, message):
+    def send_chat_message(self, message, alertMessage):
         now = timezone.now()
 
         async_to_sync(self.channel_layer.group_send)(
@@ -72,7 +73,11 @@ class ChatConsumer(WebsocketConsumer):
                 'type':'chat_message',
                 'message':message,
                 'user': self.user.username,
-                'datetime': now.isoformat(),
+                'datetime': alertMessage.time.isoformat(),
+                'pk':alertMessage.pk, 
+                'image':alertMessage.image, 
+                'alert_id':alertMessage.pk, 
+                'author':alertMessage.author
             }
         )
 
