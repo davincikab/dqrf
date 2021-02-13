@@ -193,7 +193,7 @@
                 <i class="fa fa-search"></i>
             </div>
 
-            <div class="alerts-list list-group">
+            <div class="alerts-list list-group" id="alert-list">
                 {% for alert in alerts %}
                     <div class="list-group-item py-3 px-3 {% if alert.id == activeAlert.id %} active {% endif %}">
                         <img src="https://picsum.photos/id/237/200/300" alt="" class="img-circle mr-2">
@@ -345,5 +345,13 @@
         });
 
     });
+
+    // get the active chat and move to the top
+    var activeChat = $(".list-group-item.active");
+    var alertList = $("#alert-list");
+
+    if(activeChat[0]) {
+        activeChat[0].scrollIntoView();
+    }
 </script>
 {% endblock %}
